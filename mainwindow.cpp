@@ -1,11 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QtMath>
 
 double numberFirst;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -25,12 +26,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_multiply, SIGNAL(clicked()), this, SLOT(math_operations()));
     connect(ui->pushButton_plus, SIGNAL(clicked()), this, SLOT(math_operations()));
     connect(ui->pushButton_minus, SIGNAL(clicked()), this, SLOT(math_operations()));
+    connect(ui->pushButton_sqrt, SIGNAL(clicked()), this, SLOT(math_operations()));
 
-    ui->pushButton_divide->setChecked(true);
-    ui->pushButton_multiply->setChecked(true);
-    ui->pushButton_plus->setChecked(true);
-    ui->pushButton_minus->setChecked(true);
-
+    ui->pushButton_divide->setCheckable(true);
+    ui->pushButton_multiply->setCheckable(true);
+    ui->pushButton_plus->setCheckable(true);
+    ui->pushButton_minus->setCheckable(true);
+    ui->pushButton_sqrt->setCheckable(true);
 }
 
 MainWindow::~MainWindow()
@@ -65,15 +67,15 @@ void MainWindow::operations()
 
     if(button->text() == "+/-")
     {
-        all_numbers = (ui->result_show->text() + button->text()).toDouble();
+        all_numbers = (ui->result_show->text()).toDouble();
         all_numbers *= -1;
         resultString = QString::number(all_numbers, 'g', 15);
         ui->result_show->setText(resultString);
     }
     else if(button->text() == "%")
     {
-        all_numbers = (ui->result_show->text() + button->text()).toDouble();
-        all_numbers *= 0.01;
+        all_numbers = (ui->result_show->text()).toDouble();
+        all_numbers *= (numberFirst / 100);
         resultString = QString::number(all_numbers, 'g', 15);
         ui->result_show->setText(resultString);
     }
@@ -102,6 +104,7 @@ void MainWindow::on_pushButton_AC_clicked()
     ui->pushButton_minus->setChecked(false);
     ui->pushButton_multiply->setChecked(false);
     ui->pushButton_divide->setChecked(false);
+    ui->pushButton_sqrt->setChecked(false);
 
     ui->result_show->setText("0");
 }
@@ -148,5 +151,18 @@ void MainWindow::on_pushButton_equal_clicked()
             ui->pushButton_divide->setChecked(false);
         }
     }
+    else if(ui->pushButton_sqrt->isChecked())
+    {
+       labelNumber = qSqrt(numberFirst);
+       if (numberFirst < 0)
+       {
+           ui->result_show->setText("Uncorrect input");
+       }
+       else
+       {
+           resultString = QString::number(labelNumber, 'g', 15);
+           ui->result_show->setText(resultString);
+           ui->pushButton_sqrt->setChecked(false);
+       }
+    }
 }
-
